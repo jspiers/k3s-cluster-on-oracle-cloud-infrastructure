@@ -74,8 +74,7 @@ locals {
     package_upgrade            = true
     package_reboot_if_required = true
     packages = [
-      "jq",
-      "qemu-utils",
+      "jq"
     ]
     write_files = [
       local.ignition_config,
@@ -97,7 +96,7 @@ locals {
       ],
       "env",
       "set",
-      "echo whoami = $(whoami)",
+      "'echo whoami = $(whoami)'",
       # "'ln -s "/var/lib/cloud/instance/scripts/part-003" $HOME/part-003'",
     ]
     final_message = "Jeff sends his regards. The system is up after $UPTIME seconds."

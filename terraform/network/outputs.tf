@@ -1,12 +1,12 @@
 output "vcn" {
   description = "Created VCN"
-  value       = oci_core_vcn.cluster_network
+  value       = oci_core_vcn.vcn
 }
 
-output "cluster_subnet" {
+output "subnet" {
   description = "Subnet of the k3s cluser"
-  value       = oci_core_subnet.cluster_subnet
-  depends_on  = [oci_core_subnet.cluster_subnet]
+  value       = oci_core_subnet.k3s
+  # depends_on  = [oci_core_subnet.k3s]
 }
 
 output "permit_ssh" {
