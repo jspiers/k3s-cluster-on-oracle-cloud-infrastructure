@@ -19,17 +19,17 @@ variable "region" {
   default     = "eu-frankfurt-1"
 }
 
-variable "tenancy_ocid" {
+variable "tenancy_id" {
   description = "The tenancy OCID."
   type        = string
 }
 
-variable "user_ocid" {
+variable "user_id" {
   description = "The user OCID."
   type        = string
 }
 
-variable "ssh_authorized_keys" {
-  description = "List of authorized SSH keys"
-  type        = list(any)
+variable "ssh_authorized_keys_paths" {
+  description = "List of paths to files with authorized SSH keys"
+  type        = list(string)
 }

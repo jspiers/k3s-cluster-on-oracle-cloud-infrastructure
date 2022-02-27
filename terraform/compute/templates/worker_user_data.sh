@@ -4,7 +4,7 @@ if [[ $(uname -a) =~ "Ubuntu" ]]; then
   chmod +x install.sh
 
   cat > config.yaml <<EOF
-hostname: ${host_name}
+hostname: ${hostname}
 k3os:
   dns_nameservers:
   - 127.0.0.53
@@ -22,7 +22,7 @@ k3os:
     kernel.printk: 4 4 1 7
   token: "${token}"
 ssh_authorized_keys:
-- ${ssh_public_key}
+${yamlencode(ssh_authorized_keys)}
 EOF
   ./install.sh --takeover --config config.yaml --no-format /dev/sda1 ${k3os_image}
   sleep 30

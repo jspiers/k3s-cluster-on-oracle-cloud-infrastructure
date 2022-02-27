@@ -1,0 +1,34 @@
+#!/bin/bash
+# apt-get update
+# apt-get install -y \
+#     software-properties-common \
+#     wireguard \
+#     open-iscsi
+
+# curl -sLo /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-arm64/mc
+# chmod +x /usr/local/bin/mc
+# echo "Here is where you configure mc to read from k3s bucket"
+
+set -x
+echo "Installing k3s..."
+# https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/gettingmetadata.htm
+NODE_IP=$(curl -sL -H "Authorization: Bearer Oracle" http://169.254.169.254/opc/v2/vnics/0/privateIp)
+# FLANNEL_IFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)')
+
+curl -sfL https://get.k3s.io | \
+INSTALL_K3S_SKIP_START=true \
+INSTALL_K3S_VERSION=${k3s_version} \
+sh -es - server \
+--node-ip $NODE_IP \
+%{ if cluster_init ~}
+--cluster-init
+%{ else ~}
+--server https://${kube_api_host}:${kube_api_port}
+%{ endif }
+
+# echo "Waiting 30 seconds..."
+# sleep 30
+
+echo "Testing readiness of TCP port ${kube_api_host}:${kube_api_port}..."
+test-host-port ${kube_api_host} ${kube_api_port}
+echo "returned exit code $?"

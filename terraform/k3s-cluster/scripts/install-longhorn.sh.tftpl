@@ -1,0 +1,5 @@
+#!/bin/bash
+wget  https://raw.githubusercontent.com/longhorn/longhorn/${longhorn_release}/deploy/longhorn.yaml
+sed -i 's/#- name: KUBELET_ROOT_DIR/- name: KUBELET_ROOT_DIR/g' longhorn.yaml
+sed -i 's/#  value: \/var\/lib\/rancher\/k3s\/agent\/kubelet/  value: \/var\/lib\/kubelet/g' longhorn.yaml 
+kubectl apply -f longhorn.yaml

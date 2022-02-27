@@ -3,7 +3,7 @@ variable "compartment_id" {
   type        = string
 }
 
-variable "tenancy_ocid" {
+variable "tenancy_id" {
   description = "The tenancy OCID."
   type        = string
 }

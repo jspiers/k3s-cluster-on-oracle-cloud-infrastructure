@@ -1,0 +1,82 @@
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+packages:
+  - wireguard-tools
+  - software-properties-common
+  - open-iscsi
+  - jq
+write_files:
+  - path: /etc/rancher/k3s/config.yaml
+    permissions: "0600"
+    owner: "root:root"
+    content: ${k3s_config_yaml}
+    encoding: b64
+  - path: ${k3s_token_file}
+    permissions: "0600"
+    owner: "root:root"
+    content: ${k3s_token}
+  - path: /usr/local/bin/re-cloud-init
+    permission: "0755"
+    owner: "root:root"
+    content: |
+      #!/bin/sh
+      cloud-init clean --logs
+      cloud-init init --local
+      cloud-init init
+      cloud-init modules --mode=config
+      cloud-init modules --mode=final
+  - path: /usr/local/bin/test-host-port
+    permission: "0755"
+    owner: "root:root"
+    content: |
+      #!/bin/bash
+      if [ "$2" == "" ]; then
+      echo "Syntax: $0 <host> <port>"
+      exit;
+      fi
+
+      host=$1
+      port=$2
+
+      r=$(bash -c 'exec 3<> /dev/tcp/'$host'/'$port';echo $?' 2>/dev/null)
+      if [ "$r" = "0" ]; then
+          echo "$host $port is open"
+      else
+          echo "$host $port is closed"
+          exit 1 # To force fail result in ShellScript
+      fi
+
+  # - path: /etc/environment
+  #   content: |
+  #     K3S_TOKEN="${k3s_token}"
+  #   append: true
+  # - path: /etc/rancher/k3s/config.yaml
+  #   content:
+# datasource:
+#   vnic:
+#     timeout: 50
+#     max_wait: 120
+
+#     metadata_urls:
+#       - http://169.254.169.254/opc/v2/vnics/
+snap:
+  commands:
+    00: snap install yq
+runcmd:
+  - set -x
+  # - [ ls, -l, / ]
+  # - [ sh, -xc, "echo $(date) ': hello world!'" ]
+  # - [ sh, -c, echo "=========hello world'=========" ]
+  # - ls -l /root
+  - [curl, -so, /run/cloud-init/vnics.json, -H, "Authorization: Bearer Oracle", http://169.254.169.254/opc/v2/vnics/]
+  - env
+  - set
+  - echo "whoami"
+  - whoami
+  - 'echo whoami = $(whoami)'
+  - 'ln -s "/var/lib/cloud/instance/scripts/part-003" $HOME/part-003'
+  - echo 'cloud-init clean --logs && cloud-init init --local && cloud-init init && cloud-init modules --mode=config && cloud-init modules --mode=final' > $HOME/re-cloud-init.sh
+  - chmod +x $HOME/re-cloud-init.sh
+
+final_message: "Jeff sends his regards. The system is up after $UPTIME seconds."

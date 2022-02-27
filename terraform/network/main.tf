@@ -1,6 +1,5 @@
 resource "oci_core_vcn" "cluster_network" {
   compartment_id = var.compartment_id
-
   cidr_blocks = [
     "10.0.0.0/24"
   ]
@@ -10,9 +9,7 @@ resource "oci_core_vcn" "cluster_network" {
 
 resource "oci_core_default_security_list" "default_list" {
   manage_default_resource_id = oci_core_vcn.cluster_network.default_security_list_id
-
-  display_name = "Outbound only (default)"
-
+  display_name               = "Outbound only (default)"
   egress_security_rules {
     protocol    = "all" // TCP
     description = "Allow outbound"
